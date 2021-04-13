@@ -59,16 +59,17 @@ return flow_process_variables.prov_var_clob%type;
 **
 ********************************************************************************/ 
 
-procedure delete_all_for_process
-( pi_prcs_id in flow_processes.prcs_id%type
-);
+  procedure delete_all_for_process( pi_prcs_id in flow_processes.prcs_id%type );
 
-procedure do_substitution
-(
-  pi_prcs_id in flow_processes.prcs_id%type
-, pi_sbfl_id in flow_subflows.sbfl_id%type
-, pio_string in out nocopy varchar2
-);
+  procedure do_substitution
+  (
+    pi_prcs_id in flow_processes.prcs_id%type
+  , pi_sbfl_id in flow_subflows.sbfl_id%type
+  , pio_string in out nocopy varchar2
+  );
+
+  function get_replacement_pattern( pi_substitution_variable in varchar2 ) return varchar2;
+  function get_substition_keys( pi_string in varchar2 ) return apex_t_varchar2;
 
 end flow_process_vars;
 /
