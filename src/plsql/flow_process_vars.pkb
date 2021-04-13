@@ -281,6 +281,38 @@ end get_var_clob;
     where prov.prov_prcs_id = pi_prcs_id;
   end delete_all_for_process;
 
+  function get_substition_keys
+  (
+    pi_string in varchar2
+  )
+    return apex_t_varchar2
+  as
+  begin
+    return
+      apex_string.grep
+      (
+        p_str           => pi_string
+      , p_pattern       => flow_constants_pkg.gc_substitution_pattern
+      , p_modifier      => 'i'
+      , p_subexpression => '1'
+      )
+    ;
+  end get_substitution_keys;
+
+
+  function get_replacement_pattern
+  (
+    pi_substitution_variable in varchar2
+  ) 
+    return varchar2
+  as
+  begin
+    return
+      flow_constants_pkg.gc_substitution_prefix || flow_constants_pkg.gc_substitution_flow_identifier || 
+      pi_substitution_variable || flow_constants_pkg.gc_substitution_postfix
+    ;
+  end get_replacement_pattern;
+
   procedure do_substitution
   (
     pi_prcs_id in flow_processes.prcs_id%type
@@ -290,28 +322,9 @@ end get_var_clob;
   as
     l_f4a_substitutions apex_t_varchar2;
     l_replacement_value flow_types_pkg.t_bpmn_attribute_vc2;
-  
-    function get_replacement_pattern
-    (
-      pi_substitution_variable in varchar2
-    ) return varchar2
-    as
-    begin
-      return
-        flow_constants_pkg.gc_substitution_prefix || flow_constants_pkg.gc_substitution_flow_identifier || 
-        pi_substitution_variable || flow_constants_pkg.gc_substitution_postfix
-      ;
-    end get_replacement_pattern;
   begin
-    l_f4a_substitutions :=
-      apex_string.grep
-      (
-        p_str           => pio_string
-      , p_pattern       => flow_constants_pkg.gc_substitution_pattern
-      , p_modifier      => 'i'
-      , p_subexpression => '1'
-      )
-    ;
+    l_f4a_substitutions := get_substition_keys( pi_string => pio_string );
+
     if l_f4a_substitutions is not null then
       for i in 1..l_f4a_substitutions.count
       loop
